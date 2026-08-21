@@ -4,8 +4,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  base: '/Smartspend-student-budget-manager/',
-  plugins: [react(), tailwindcss()],
+base: '/smartspend-student-budget-manager/',  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(process.cwd(), 'src'),
