@@ -74,13 +74,34 @@ const categoryColors: Record<Category, string> = {
 
 const storageKey = 'student-expense-tracker-expenses';
 const budgetStorageKey = 'smartspend-monthly-budget';
+
+const SITE_URL =
+  'https://vankasivateja.github.io/smartspend-student-budget-manager/';
+
+const DEVELOPER_NAME = 'Vanka Siva Teja';
+const DEVELOPER_EMAIL = 'sivatejavanka118@gmail.com';
+
+/*
+ * IMPORTANT:
+ * Replace this with your real LinkedIn profile URL.
+ *
+ * Example:
+ * https://www.linkedin.com/in/vanka-siva-teja/
+ */
+const LINKEDIN_URL = 'YOUR_LINKEDIN_PROFILE_URL';
+
+const GITHUB_URL = 'https://github.com/vankasivateja';
+
 const today = () => new Date().toISOString().slice(0, 10);
 
 function readExpenses(): Expense[] {
   try {
     const stored = window.localStorage.getItem(storageKey);
+
     if (!stored) return [];
+
     const parsed = JSON.parse(stored) as Expense[];
+
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
@@ -99,6 +120,7 @@ function readBudget() {
   try {
     const stored = window.localStorage.getItem(budgetStorageKey);
     const parsed = Number(stored);
+
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   } catch {
     return 0;
@@ -107,8 +129,11 @@ function readBudget() {
 
 function saveBudget(budget: number) {
   try {
-    if (budget > 0) window.localStorage.setItem(budgetStorageKey, String(budget));
-    else window.localStorage.removeItem(budgetStorageKey);
+    if (budget > 0) {
+      window.localStorage.setItem(budgetStorageKey, String(budget));
+    } else {
+      window.localStorage.removeItem(budgetStorageKey);
+    }
   } catch {
     // Keep the budget controls usable when browser storage is unavailable.
   }
@@ -138,18 +163,211 @@ function App() {
   const [expenses, setExpenses] = useState<Expense[]>(readExpenses);
   const [view, setView] = useState<View>('dashboard');
   const [notice, setNotice] = useState<Notice | null>(null);
-  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
-  const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] =
+    useState<Expense | null>(null);
+  const [expenseToEdit, setExpenseToEdit] =
+    useState<Expense | null>(null);
   const [monthlyBudget, setMonthlyBudget] = useState(readBudget);
-  const [budgetInput, setBudgetInput] = useState(() => String(readBudget() || ''));
+  const [budgetInput, setBudgetInput] = useState(() =>
+    String(readBudget() || ''),
+  );
   const [search, setSearch] = useState('');
-  const [filterCategory, setFilterCategory] = useState<'All' | Category>('All');
-  const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
+  const [filterCategory, setFilterCategory] =
+    useState<'All' | Category>('All');
+  const [sortBy, setSortBy] =
+    useState<'date' | 'amount'>('date');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState<'' | Category>('');
+  const [category, setCategory] =
+    useState<'' | Category>('');
   const [date, setDate] = useState(today);
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [formErrors, setFormErrors] =
+    useState<Record<string, string>>({});
+
+  /*
+   * SEO metadata
+   *
+   * This tells search engines what this website is about
+   * and who created it.
+   */
+  useEffect(() => {
+    document.title =
+      'Vanka Siva Teja | SmartSpend Student Budget Manager';
+
+    const setMeta = (
+      name: string,
+      content: string,
+      attribute: 'name' | 'property' = 'name',
+    ) => {
+      let meta = document.head.querySelector(
+        `meta[${attribute}="${name}"]`,
+      ) as HTMLMetaElement | null;
+
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute(attribute, name);
+        document.head.appendChild(meta);
+      }
+
+      meta.setAttribute('content', content);
+    };
+
+    setMeta(
+      'description',
+      'SmartSpend is a student budget manager created by Vanka Siva Teja to help students track expenses, manage budgets, and develop better financial habits.',
+    );
+
+    setMeta('author', DEVELOPER_NAME);
+
+    setMeta(
+      'keywords',
+      'Vanka Siva Teja, SmartSpend, Student Budget Manager, student expense tracker, personal finance, budget manager',
+    );
+
+    setMeta(
+      'robots',
+      'index, follow',
+    );
+
+    setMeta(
+      'og:title',
+      'Vanka Siva Teja | SmartSpend Student Budget Manager',
+      'property',
+    );
+
+    setMeta(
+      'og:description',
+      'SmartSpend — Student Budget Manager created by Vanka Siva Teja.',
+      'property',
+    );
+
+    setMeta(
+      'og:url',
+      SITE_URL,
+      'property',
+    );
+
+    setMeta(
+      'og:type',
+      'website',
+      'property',
+    );
+
+    setMeta(
+      'og:site_name',
+      'SmartSpend',
+      'property',
+    );
+
+    setMeta(
+      'twitter:card',
+      'summary',
+    );
+
+    setMeta(
+      'twitter:title',
+      'Vanka Siva Teja | SmartSpend Student Budget Manager',
+    );
+
+    setMeta(
+      'twitter:description',
+      'SmartSpend — Student Budget Manager created by Vanka Siva Teja.',
+    );
+  }, []);
+
+  /*
+   * Person structured data
+   *
+   * This helps search engines understand that
+   * Vanka Siva Teja is the creator/developer of SmartSpend.
+   */
+  useEffect(() => {
+    const scriptId = 'developer-person-schema';
+
+    let script = document.getElementById(
+      scriptId,
+    ) as HTMLScriptElement | null;
+
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+
+      document.head.appendChild(script);
+    }
+
+    const sameAs: string[] = [
+      GITHUB_URL,
+    ];
+
+    /*
+     * Only add LinkedIn if the real URL has been provided.
+     */
+    if (
+      LINKEDIN_URL &&
+      LINKEDIN_URL !== 'YOUR_LINKEDIN_PROFILE_URL'
+    ) {
+      sameAs.push(LINKEDIN_URL);
+    }
+
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: DEVELOPER_NAME,
+      email: `mailto:${DEVELOPER_EMAIL}`,
+      jobTitle: 'Creator & Developer of SmartSpend',
+      url: SITE_URL,
+      sameAs,
+      knowsAbout: [
+        'Student Budget Management',
+        'Personal Finance',
+        'Expense Tracking',
+        'Web Development',
+      ],
+    });
+
+    return () => {
+      script?.remove();
+    };
+  }, []);
+
+  /*
+   * Website structured data
+   */
+  useEffect(() => {
+    const scriptId = 'smartspend-website-schema';
+
+    let script = document.getElementById(
+      scriptId,
+    ) as HTMLScriptElement | null;
+
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+
+      document.head.appendChild(script);
+    }
+
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'SmartSpend',
+      alternateName: 'SmartSpend Student Budget Manager',
+      url: SITE_URL,
+      description:
+        'A student budget manager for tracking expenses and managing monthly spending.',
+      creator: {
+        '@type': 'Person',
+        name: DEVELOPER_NAME,
+        email: `mailto:${DEVELOPER_EMAIL}`,
+      },
+    });
+
+    return () => {
+      script?.remove();
+    };
+  }, []);
 
   useEffect(() => {
     saveExpenses(expenses);
@@ -161,49 +379,83 @@ function App() {
 
   useEffect(() => {
     if (!notice) return;
-    const timeout = window.setTimeout(() => setNotice(null), 3200);
+
+    const timeout = window.setTimeout(
+      () => setNotice(null),
+      3200,
+    );
+
     return () => window.clearTimeout(timeout);
   }, [notice]);
 
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  const currentMonth = new Date()
+    .toISOString()
+    .slice(0, 7);
 
   const monthExpenses = useMemo(
-    () => expenses.filter((expense) => expense.date.slice(0, 7) === currentMonth),
+    () =>
+      expenses.filter(
+        (expense) =>
+          expense.date.slice(0, 7) === currentMonth,
+      ),
     [expenses, currentMonth],
   );
 
   const total = useMemo(
-    () => expenses.reduce((sum, expense) => sum + expense.amount, 0),
+    () =>
+      expenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0,
+      ),
     [expenses],
   );
 
   const monthTotal = useMemo(
-    () => monthExpenses.reduce((sum, expense) => sum + expense.amount, 0),
+    () =>
+      monthExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0,
+      ),
     [monthExpenses],
   );
 
   const budgetPercent =
-    monthlyBudget > 0 ? Math.round((monthTotal / monthlyBudget) * 100) : 0;
+    monthlyBudget > 0
+      ? Math.round(
+          (monthTotal / monthlyBudget) * 100,
+        )
+      : 0;
 
-  const budgetRemaining = monthlyBudget - monthTotal;
+  const budgetRemaining =
+    monthlyBudget - monthTotal;
 
   const highestCategory = useMemo(() => {
-    const totals = expenses.reduce<Partial<Record<Category, number>>>(
-      (result, expense) => {
-        result[expense.category] =
-          (result[expense.category] ?? 0) + expense.amount;
-        return result;
-      },
-      {},
-    );
+    const totals = expenses.reduce<
+      Partial<Record<Category, number>>
+    >((result, expense) => {
+      result[expense.category] =
+        (result[expense.category] ?? 0) +
+        expense.amount;
 
-    return categories.reduce<Category | null>((highest, item) => {
-      if (!totals[item]) return highest;
-      if (!highest || (totals[item] ?? 0) > (totals[highest] ?? 0)) {
-        return item;
-      }
-      return highest;
-    }, null);
+      return result;
+    }, {});
+
+    return categories.reduce<Category | null>(
+      (highest, item) => {
+        if (!totals[item]) return highest;
+
+        if (
+          !highest ||
+          (totals[item] ?? 0) >
+            (totals[highest] ?? 0)
+        ) {
+          return item;
+        }
+
+        return highest;
+      },
+      null,
+    );
   }, [expenses]);
 
   const filteredExpenses = useMemo(() => {
@@ -213,20 +465,31 @@ function App() {
       .filter((expense) => {
         const matchesQuery =
           !query ||
-          expense.description.toLowerCase().includes(query) ||
-          expense.category.toLowerCase().includes(query);
+          expense.description
+            .toLowerCase()
+            .includes(query) ||
+          expense.category
+            .toLowerCase()
+            .includes(query);
 
         return (
           matchesQuery &&
-          (filterCategory === 'All' || expense.category === filterCategory)
+          (filterCategory === 'All' ||
+            expense.category === filterCategory)
         );
       })
       .sort((a, b) =>
         sortBy === 'date'
-          ? b.date.localeCompare(a.date) || b.id.localeCompare(a.id)
+          ? b.date.localeCompare(a.date) ||
+            b.id.localeCompare(a.id)
           : b.amount - a.amount,
       );
-  }, [expenses, filterCategory, search, sortBy]);
+  }, [
+    expenses,
+    filterCategory,
+    search,
+    sortBy,
+  ]);
 
   const categoryData = useMemo(
     () =>
@@ -234,30 +497,45 @@ function App() {
         .map((item) => ({
           name: item,
           value: expenses
-            .filter((expense) => expense.category === item)
-            .reduce((sum, expense) => sum + expense.amount, 0),
+            .filter(
+              (expense) =>
+                expense.category === item,
+            )
+            .reduce(
+              (sum, expense) =>
+                sum + expense.amount,
+              0,
+            ),
         }))
         .filter((item) => item.value > 0),
     [expenses],
   );
 
   const timeData = useMemo(() => {
-    const grouped = expenses.reduce<Record<string, number>>(
-      (result, expense) => {
-        result[expense.date] =
-          (result[expense.date] ?? 0) + expense.amount;
-        return result;
-      },
-      {},
-    );
+    const grouped = expenses.reduce<
+      Record<string, number>
+    >((result, expense) => {
+      result[expense.date] =
+        (result[expense.date] ?? 0) +
+        expense.amount;
+
+      return result;
+    }, {});
 
     return Object.entries(grouped)
-      .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+      .sort(([dateA], [dateB]) =>
+        dateA.localeCompare(dateB),
+      )
       .map(([dateValue, value]) => ({
-        date: new Intl.DateTimeFormat('en-IN', {
-          day: 'numeric',
-          month: 'short',
-        }).format(new Date(`${dateValue}T12:00:00`)),
+        date: new Intl.DateTimeFormat(
+          'en-IN',
+          {
+            day: 'numeric',
+            month: 'short',
+          },
+        ).format(
+          new Date(`${dateValue}T12:00:00`),
+        ),
         amount: value,
       }));
   }, [expenses]);
@@ -265,30 +543,35 @@ function App() {
   function goTo(nextView: View) {
     setView(nextView);
 
-    window.setTimeout(
-      () =>
-        document
-          .getElementById('app-content')
-          ?.scrollIntoView({ behavior: 'smooth' }),
-      0,
-    );
+    window.setTimeout(() => {
+      document
+        .getElementById('app-content')
+        ?.scrollIntoView({
+          behavior: 'smooth',
+        });
+    }, 0);
   }
 
-  function submitExpense(event: FormEvent<HTMLFormElement>) {
+  function submitExpense(
+    event: FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault();
 
     const errors: Record<string, string> = {};
 
     if (!description.trim()) {
-      errors.description = 'Add a short description.';
+      errors.description =
+        'Add a short description.';
     }
 
     if (!amount || Number(amount) <= 0) {
-      errors.amount = 'Enter an amount above ₹0.';
+      errors.amount =
+        'Enter an amount above ₹0.';
     }
 
     if (!category) {
-      errors.category = 'Choose a category.';
+      errors.category =
+        'Choose a category.';
     }
 
     if (!date) {
@@ -297,7 +580,9 @@ function App() {
 
     setFormErrors(errors);
 
-    if (Object.keys(errors).length > 0) return;
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
 
     const expenseValues = {
       description: description.trim(),
@@ -310,24 +595,34 @@ function App() {
       setExpenses((current) =>
         current.map((expense) =>
           expense.id === expenseToEdit.id
-            ? { ...expense, ...expenseValues }
+            ? {
+                ...expense,
+                ...expenseValues,
+              }
             : expense,
         ),
       );
 
       setExpenseToEdit(null);
-      setNotice({ message: 'Expense updated successfully.' });
+
+      setNotice({
+        message:
+          'Expense updated successfully.',
+      });
     } else {
       setExpenses((current) => [
         {
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          id: `${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 8)}`,
           ...expenseValues,
         },
         ...current,
       ]);
 
       setNotice({
-        message: 'Expense added. Nice work keeping track.',
+        message:
+          'Expense added. Nice work keeping track.',
       });
     }
 
@@ -349,21 +644,28 @@ function App() {
     goTo('dashboard');
 
     window.setTimeout(
-      () => document.getElementById('description')?.focus(),
+      () =>
+        document
+          .getElementById('description')
+          ?.focus(),
       250,
     );
   }
 
-  function saveBudgetFromInput(event: FormEvent<HTMLFormElement>) {
+  function saveBudgetFromInput(
+    event: FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault();
 
     const nextBudget = Number(budgetInput);
 
     if (!nextBudget || nextBudget <= 0) {
       setNotice({
-        message: 'Enter a monthly budget above ₹0.',
+        message:
+          'Enter a monthly budget above ₹0.',
         type: 'error',
       });
+
       return;
     }
 
@@ -378,17 +680,26 @@ function App() {
   function exportCsv() {
     if (!expenses.length) {
       setNotice({
-        message: 'Add an expense before exporting.',
+        message:
+          'Add an expense before exporting.',
         type: 'error',
       });
+
       return;
     }
 
-    const escapeCsv = (value: string | number) =>
+    const escapeCsv = (
+      value: string | number,
+    ) =>
       `"${String(value).replace(/"/g, '""')}"`;
 
     const rows = [
-      ['Description', 'Amount', 'Category', 'Date'],
+      [
+        'Description',
+        'Amount',
+        'Category',
+        'Date',
+      ],
       ...expenses.map((expense) => [
         expense.description,
         expense.amount,
@@ -398,7 +709,9 @@ function App() {
     ];
 
     const csv = rows
-      .map((row) => row.map(escapeCsv).join(','))
+      .map((row) =>
+        row.map(escapeCsv).join(','),
+      )
       .join('\n');
 
     const url = URL.createObjectURL(
@@ -408,8 +721,10 @@ function App() {
     );
 
     const link = document.createElement('a');
+
     link.href = url;
     link.download = `smartspend-expenses-${currentMonth}.csv`;
+
     link.click();
 
     URL.revokeObjectURL(url);
@@ -423,13 +738,17 @@ function App() {
     if (!expenseToDelete) return;
 
     setExpenses((current) =>
-      current.filter((expense) => expense.id !== expenseToDelete.id),
+      current.filter(
+        (expense) =>
+          expense.id !== expenseToDelete.id,
+      ),
     );
 
     setExpenseToDelete(null);
 
     setNotice({
-      message: 'Expense removed from your tracker.',
+      message:
+        'Expense removed from your tracker.',
     });
   }
 
@@ -465,11 +784,16 @@ function App() {
       <header className="topbar">
         <button
           className="brand"
-          onClick={() => goTo('dashboard')}
+          onClick={() =>
+            goTo('dashboard')
+          }
           data-testid="button-brand-home"
         >
           <span className="brand-mark">
-            <IndianRupee size={19} strokeWidth={2.4} />
+            <IndianRupee
+              size={19}
+              strokeWidth={2.4}
+            />
           </span>
 
           <span>
@@ -478,7 +802,8 @@ function App() {
             </span>
 
             <span className="brand-kicker">
-              smartspend · student budget manager
+              smartspend · student budget
+              manager
             </span>
           </span>
         </button>
@@ -487,21 +812,32 @@ function App() {
           className="desktop-nav"
           aria-label="Primary navigation"
         >
-          {navItems.map(({ id, label, icon: Icon }) => (
-            <button
-              className={`nav-button ${
-                view === id ? 'active' : ''
-              }`}
-              key={id}
-              onClick={() => goTo(id)}
-              aria-current={
-                view === id ? 'page' : undefined
-              }
-              data-testid={`nav-${id}`}
-            >
-              {label}
-            </button>
-          ))}
+          {navItems.map(
+            ({
+              id,
+              label,
+            }) => (
+              <button
+                className={`nav-button ${
+                  view === id
+                    ? 'active'
+                    : ''
+                }`}
+                key={id}
+                onClick={() =>
+                  goTo(id)
+                }
+                aria-current={
+                  view === id
+                    ? 'page'
+                    : undefined
+                }
+                data-testid={`nav-${id}`}
+              >
+                {label}
+              </button>
+            ),
+          )}
         </nav>
       </header>
 
@@ -520,13 +856,16 @@ function App() {
 
             <h1 className="page-heading">
               A calmer way to notice{' '}
-              <em>the little things.</em>
+              <em>
+                the little things.
+              </em>
             </h1>
 
             <p className="page-subtitle">
-              Keep a gentle record of your everyday spending.
-              No judgement, just a clearer picture of student
-              life.
+              Keep a gentle record of
+              your everyday spending. No
+              judgement, just a clearer
+              picture of student life.
             </p>
 
             <div className="dashboard-grid">
@@ -536,9 +875,14 @@ function App() {
                   data-testid="stat-total"
                 >
                   <div className="stat-label">
-                    <span>All-time spend</span>
+                    <span>
+                      All-time spend
+                    </span>
+
                     <span className="stat-icon">
-                      <CircleDollarSign size={16} />
+                      <CircleDollarSign
+                        size={16}
+                      />
                     </span>
                   </div>
 
@@ -547,7 +891,8 @@ function App() {
                   </div>
 
                   <p className="stat-note">
-                    Across every logged expense
+                    Across every logged
+                    expense
                   </p>
                 </article>
 
@@ -556,19 +901,27 @@ function App() {
                   data-testid="stat-month"
                 >
                   <div className="stat-label">
-                    <span>This month</span>
+                    <span>
+                      This month
+                    </span>
+
                     <span className="stat-icon">
-                      <CalendarDays size={16} />
+                      <CalendarDays
+                        size={16}
+                      />
                     </span>
                   </div>
 
                   <div className="stat-value">
-                    {formatMoney(monthTotal)}
+                    {formatMoney(
+                      monthTotal,
+                    )}
                   </div>
 
                   <p className="stat-note">
                     {monthExpenses.length}{' '}
-                    {monthExpenses.length === 1
+                    {monthExpenses.length ===
+                    1
                       ? 'entry'
                       : 'entries'}{' '}
                     so far
@@ -580,9 +933,14 @@ function App() {
                   data-testid="stat-count"
                 >
                   <div className="stat-label">
-                    <span>Transactions</span>
+                    <span>
+                      Transactions
+                    </span>
+
                     <span className="stat-icon">
-                      <Receipt size={16} />
+                      <Receipt
+                        size={16}
+                      />
                     </span>
                   </div>
 
@@ -600,9 +958,14 @@ function App() {
                   data-testid="stat-highest-category"
                 >
                   <div className="stat-label">
-                    <span>Top category</span>
+                    <span>
+                      Top category
+                    </span>
+
                     <span className="stat-icon">
-                      <TrendingUp size={16} />
+                      <TrendingUp
+                        size={16}
+                      />
                     </span>
                   </div>
 
@@ -614,7 +977,8 @@ function App() {
                       fontSize: 20,
                     }}
                   >
-                    {highestCategory ?? '—'}
+                    {highestCategory ??
+                      '—'}
                   </div>
 
                   <p className="stat-note">
@@ -636,37 +1000,50 @@ function App() {
                     </h2>
 
                     <p>
-                      Set a gentle limit for{' '}
+                      Set a gentle limit
+                      for{' '}
                       {new Intl.DateTimeFormat(
                         'en-IN',
                         {
-                          month: 'long',
+                          month:
+                            'long',
                         },
-                      ).format(new Date())}
+                      ).format(
+                        new Date(),
+                      )}
                       .
                     </p>
                   </div>
 
                   <span className="stat-icon">
-                    <WalletCards size={17} />
+                    <WalletCards
+                      size={17}
+                    />
                   </span>
                 </div>
 
                 <form
                   className="budget-form"
-                  onSubmit={saveBudgetFromInput}
+                  onSubmit={
+                    saveBudgetFromInput
+                  }
                 >
                   <div className="amount-wrap">
-                    <span className="rupee">₹</span>
+                    <span className="rupee">
+                      ₹
+                    </span>
 
                     <input
                       className="input"
                       type="number"
                       min="1"
-                      value={budgetInput}
+                      value={
+                        budgetInput
+                      }
                       onChange={(event) =>
                         setBudgetInput(
-                          event.target.value,
+                          event.target
+                            .value,
                         )
                       }
                       placeholder="Set monthly budget"
@@ -686,26 +1063,40 @@ function App() {
 
                 <div className="budget-metrics">
                   <div>
-                    <span>Budget</span>
+                    <span>
+                      Budget
+                    </span>
+
                     <strong>
                       {monthlyBudget
-                        ? formatMoney(monthlyBudget)
+                        ? formatMoney(
+                            monthlyBudget,
+                          )
                         : 'Not set'}
                     </strong>
                   </div>
 
                   <div>
-                    <span>Spent</span>
+                    <span>
+                      Spent
+                    </span>
+
                     <strong>
-                      {formatMoney(monthTotal)}
+                      {formatMoney(
+                        monthTotal,
+                      )}
                     </strong>
                   </div>
 
                   <div>
-                    <span>Remaining</span>
+                    <span>
+                      Remaining
+                    </span>
+
                     <strong
                       className={
-                        budgetRemaining < 0
+                        budgetRemaining <
+                        0
                           ? 'over-budget'
                           : ''
                       }
@@ -717,15 +1108,20 @@ function App() {
                             ),
                           )
                         : '—'}
+
                       {monthlyBudget &&
-                      budgetRemaining < 0
+                      budgetRemaining <
+                        0
                         ? ' over'
                         : ''}
                     </strong>
                   </div>
 
                   <div>
-                    <span>Used</span>
+                    <span>
+                      Used
+                    </span>
+
                     <strong>
                       {monthlyBudget
                         ? `${budgetPercent}%`
@@ -734,7 +1130,8 @@ function App() {
                   </div>
                 </div>
 
-                {monthlyBudget > 0 && (
+                {monthlyBudget >
+                  0 && (
                   <div
                     className="budget-progress"
                     aria-label={`${budgetPercent}% of monthly budget used`}
@@ -750,27 +1147,35 @@ function App() {
                   </div>
                 )}
 
-                {monthlyBudget > 0 &&
-                  budgetPercent >= 100 && (
+                {monthlyBudget >
+                  0 &&
+                  budgetPercent >=
+                    100 && (
                     <div
                       className="budget-alert danger-alert"
                       role="alert"
                     >
-                      You’re over budget this month.
-                      Consider pausing non-essential
+                      You’re over budget
+                      this month. Consider
+                      pausing non-essential
                       spending.
                     </div>
                   )}
 
-                {monthlyBudget > 0 &&
-                  budgetPercent >= 80 &&
-                  budgetPercent < 100 && (
+                {monthlyBudget >
+                  0 &&
+                  budgetPercent >=
+                    80 &&
+                  budgetPercent <
+                    100 && (
                     <div
                       className="budget-alert warning-alert"
                       role="status"
                     >
-                      You’ve used {budgetPercent}% of
-                      your monthly budget.
+                      You’ve used{' '}
+                      {budgetPercent}% of
+                      your monthly
+                      budget.
                     </div>
                   )}
               </section>
@@ -788,7 +1193,8 @@ function App() {
                     </h2>
 
                     <p>
-                      One line at a time is enough.
+                      One line at a time
+                      is enough.
                     </p>
                   </div>
 
@@ -799,7 +1205,9 @@ function App() {
 
                 <form
                   className="form-grid"
-                  onSubmit={submitExpense}
+                  onSubmit={
+                    submitExpense
+                  }
                   noValidate
                 >
                   <div className="field">
@@ -814,10 +1222,13 @@ function App() {
                           ? 'input-error'
                           : ''
                       }`}
-                      value={description}
+                      value={
+                        description
+                      }
                       onChange={(event) =>
                         setDescription(
-                          event.target.value,
+                          event.target
+                            .value,
                         )
                       }
                       placeholder="Canteen lunch, metro pass..."
@@ -826,7 +1237,9 @@ function App() {
 
                     {formErrors.description && (
                       <p className="error-text">
-                        {formErrors.description}
+                        {
+                          formErrors.description
+                        }
                       </p>
                     )}
                   </div>
@@ -837,7 +1250,9 @@ function App() {
                     </label>
 
                     <div className="amount-wrap">
-                      <span className="rupee">₹</span>
+                      <span className="rupee">
+                        ₹
+                      </span>
 
                       <input
                         id="amount"
@@ -849,10 +1264,13 @@ function App() {
                             ? 'input-error'
                             : ''
                         }`}
-                        value={amount}
+                        value={
+                          amount
+                        }
                         onChange={(event) =>
                           setAmount(
-                            event.target.value,
+                            event.target
+                              .value,
                           )
                         }
                         placeholder="0"
@@ -862,7 +1280,9 @@ function App() {
 
                     {formErrors.amount && (
                       <p className="error-text">
-                        {formErrors.amount}
+                        {
+                          formErrors.amount
+                        }
                       </p>
                     )}
                   </div>
@@ -879,10 +1299,13 @@ function App() {
                           ? 'input-error'
                           : ''
                       }`}
-                      value={category}
+                      value={
+                        category
+                      }
                       onChange={(event) =>
                         setCategory(
-                          event.target.value as
+                          event.target
+                            .value as
                             | ''
                             | Category,
                         )
@@ -893,19 +1316,23 @@ function App() {
                         Choose one
                       </option>
 
-                      {categories.map((item) => (
-                        <option
-                          value={item}
-                          key={item}
-                        >
-                          {item}
-                        </option>
-                      ))}
+                      {categories.map(
+                        (item) => (
+                          <option
+                            value={item}
+                            key={item}
+                          >
+                            {item}
+                          </option>
+                        ),
+                      )}
                     </select>
 
                     {formErrors.category && (
                       <p className="error-text">
-                        {formErrors.category}
+                        {
+                          formErrors.category
+                        }
                       </p>
                     )}
                   </div>
@@ -925,14 +1352,19 @@ function App() {
                       }`}
                       value={date}
                       onChange={(event) =>
-                        setDate(event.target.value)
+                        setDate(
+                          event.target
+                            .value,
+                        )
                       }
                       data-testid="input-date"
                     />
 
                     {formErrors.date && (
                       <p className="error-text">
-                        {formErrors.date}
+                        {
+                          formErrors.date
+                        }
                       </p>
                     )}
                   </div>
@@ -942,7 +1374,8 @@ function App() {
                     type="submit"
                     data-testid="button-add-expense"
                   >
-                    <Plus size={16} />{' '}
+                    <Plus size={16} />
+
                     {expenseToEdit
                       ? 'Save changes'
                       : 'Add expense'}
@@ -953,14 +1386,19 @@ function App() {
                       className="button ghost"
                       type="button"
                       onClick={() => {
-                        setExpenseToEdit(null);
-                        setDescription('');
+                        setExpenseToEdit(
+                          null,
+                        );
+                        setDescription(
+                          '',
+                        );
                         setAmount('');
                         setCategory('');
                         setDate(today());
                       }}
                     >
-                      <X size={16} /> Cancel edit
+                      <X size={16} />
+                      Cancel edit
                     </button>
                   )}
                 </form>
@@ -976,66 +1414,98 @@ function App() {
                       Recent notes
                     </h2>
 
-                    <p>Your five latest entries</p>
+                    <p>
+                      Your five latest
+                      entries
+                    </p>
                   </div>
 
                   <button
                     className="button ghost"
-                    onClick={() => goTo('expenses')}
+                    onClick={() =>
+                      goTo(
+                        'expenses',
+                      )
+                    }
                     data-testid="button-view-all"
                   >
                     View all
                   </button>
                 </div>
 
-                {expenses.length === 0 ? (
+                {expenses.length ===
+                0 ? (
                   <div className="empty-mini">
                     <Coffee size={25} />
 
                     <div>
                       No entries yet.
                       <br />
-                      Your first one can be tiny.
+                      Your first one
+                      can be tiny.
                     </div>
                   </div>
                 ) : (
                   <div className="activity-list">
-                    {[...expenses]
+                    {[
+                      ...expenses,
+                    ]
                       .sort((a, b) =>
-                        b.date.localeCompare(a.date),
+                        b.date.localeCompare(
+                          a.date,
+                        ),
                       )
                       .slice(0, 5)
-                      .map((expense, index) => (
-                        <div
-                          className="activity-item"
-                          style={{
-                            animationDelay: `${index * 55}ms`,
-                          }}
-                          key={expense.id}
-                          data-testid={`activity-${expense.id}`}
-                        >
-                          <span
-                            className={`category-dot ${categoryClass(
-                              expense.category,
-                            )}`}
-                          />
+                      .map(
+                        (
+                          expense,
+                          index,
+                        ) => (
+                          <div
+                            className="activity-item"
+                            style={{
+                              animationDelay: `${
+                                index *
+                                55
+                              }ms`,
+                            }}
+                            key={
+                              expense.id
+                            }
+                            data-testid={`activity-${expense.id}`}
+                          >
+                            <span
+                              className={`category-dot ${categoryClass(
+                                expense.category,
+                              )}`}
+                            />
 
-                          <div className="activity-copy">
-                            <strong>
-                              {expense.description}
-                            </strong>
+                            <div className="activity-copy">
+                              <strong>
+                                {
+                                  expense.description
+                                }
+                              </strong>
 
-                            <span>
-                              {expense.category} ·{' '}
-                              {formatDate(expense.date)}
+                              <span>
+                                {
+                                  expense.category
+                                }{' '}
+                                ·{' '}
+                                {formatDate(
+                                  expense.date,
+                                )}
+                              </span>
+                            </div>
+
+                            <span className="money">
+                              {formatMoney(
+                                expense.amount,
+                              )}
                             </span>
                           </div>
-
-                          <span className="money">
-                            {formatMoney(expense.amount)}
-                          </span>
-                        </div>
-                      ))}
+                        ),
+                      )}
                   </div>
                 )}
               </section>
@@ -1053,12 +1523,14 @@ function App() {
             </p>
 
             <h1 className="page-heading">
-              Your <em>expense log.</em>
+              Your{' '}
+              <em>expense log.</em>
             </h1>
 
             <p className="page-subtitle">
-              Search, sort, and make sense of the everyday
-              choices behind your total.
+              Search, sort, and make sense
+              of the everyday choices behind
+              your total.
             </p>
 
             <section
@@ -1072,8 +1544,9 @@ function App() {
                   </h2>
 
                   <p>
-                    {filteredExpenses.length} of{' '}
-                    {expenses.length} shown
+                    {filteredExpenses.length}{' '}
+                    of {expenses.length}{' '}
+                    shown
                   </p>
                 </div>
 
@@ -1082,7 +1555,8 @@ function App() {
                   onClick={exportCsv}
                   data-testid="button-export-csv"
                 >
-                  <Download size={15} /> Export CSV
+                  <Download size={15} />
+                  Export CSV
                 </button>
               </div>
 
@@ -1095,7 +1569,10 @@ function App() {
                     type="search"
                     value={search}
                     onChange={(event) =>
-                      setSearch(event.target.value)
+                      setSearch(
+                        event.target
+                          .value,
+                      )
                     }
                     placeholder="Search description or category"
                     aria-label="Search expenses"
@@ -1105,10 +1582,13 @@ function App() {
 
                 <select
                   className="select"
-                  value={filterCategory}
+                  value={
+                    filterCategory
+                  }
                   onChange={(event) =>
                     setFilterCategory(
-                      event.target.value as
+                      event.target
+                        .value as
                         | 'All'
                         | Category,
                     )
@@ -1120,14 +1600,16 @@ function App() {
                     All categories
                   </option>
 
-                  {categories.map((item) => (
-                    <option
-                      value={item}
-                      key={item}
-                    >
-                      {item}
-                    </option>
-                  ))}
+                  {categories.map(
+                    (item) => (
+                      <option
+                        value={item}
+                        key={item}
+                      >
+                        {item}
+                      </option>
+                    ),
+                  )}
                 </select>
 
                 <select
@@ -1135,7 +1617,8 @@ function App() {
                   value={sortBy}
                   onChange={(event) =>
                     setSortBy(
-                      event.target.value as
+                      event.target
+                        .value as
                         | 'date'
                         | 'amount',
                     )
@@ -1154,36 +1637,47 @@ function App() {
               </div>
 
               <div className="expense-table">
-                {filteredExpenses.length === 0 ? (
+                {filteredExpenses.length ===
+                0 ? (
                   <div
                     className="empty-state"
                     data-testid="empty-expenses"
                   >
                     <div className="empty-illustration">
-                      <Receipt size={27} />
+                      <Receipt
+                        size={27}
+                      />
                     </div>
 
                     <h3>
-                      {expenses.length === 0
+                      {expenses.length ===
+                      0
                         ? 'A blank page can be a good start.'
                         : 'Nothing matches that search.'}
                     </h3>
 
                     <p>
-                      {expenses.length === 0
+                      {expenses.length ===
+                      0
                         ? 'No expenses yet. Add your first expense to start tracking your spending.'
                         : 'Try a different word or clear the filters to see your full log.'}
                     </p>
 
-                    {expenses.length === 0 && (
+                    {expenses.length ===
+                      0 && (
                       <button
                         className="button"
                         onClick={() =>
-                          goTo('dashboard')
+                          goTo(
+                            'dashboard',
+                          )
                         }
                         data-testid="button-empty-add"
                       >
-                        <Plus size={16} /> Add your first
+                        <Plus
+                          size={16}
+                        />
+                        Add your first
                         expense
                       </button>
                     )}
@@ -1191,55 +1685,85 @@ function App() {
                 ) : (
                   <>
                     <div className="expense-head">
-                      <span>Expense</span>
-                      <span>Category</span>
-                      <span>Date</span>
-                      <span>Amount</span>
+                      <span>
+                        Expense
+                      </span>
+                      <span>
+                        Category
+                      </span>
+                      <span>
+                        Date
+                      </span>
+                      <span>
+                        Amount
+                      </span>
                       <span aria-hidden="true" />
                     </div>
 
                     {filteredExpenses.map(
-                      (expense, index) => (
+                      (
+                        expense,
+                        index,
+                      ) => (
                         <div
                           className="expense-row"
                           style={{
-                            animationDelay: `${index * 45}ms`,
+                            animationDelay: `${
+                              index *
+                              45
+                            }ms`,
                           }}
-                          key={expense.id}
+                          key={
+                            expense.id
+                          }
                           data-testid={`row-expense-${expense.id}`}
                         >
                           <div className="expense-description">
                             <strong>
-                              {expense.description}
+                              {
+                                expense.description
+                              }
                             </strong>
 
                             <span>
-                              Added to your journal
+                              Added to
+                              your
+                              journal
                             </span>
                           </div>
 
                           <span className="tag">
-                            {expense.category}
+                            {
+                              expense.category
+                            }
                           </span>
 
                           <span className="date-copy">
-                            {formatDate(expense.date)}
+                            {formatDate(
+                              expense.date,
+                            )}
                           </span>
 
                           <span className="money">
-                            {formatMoney(expense.amount)}
+                            {formatMoney(
+                              expense.amount,
+                            )}
                           </span>
 
                           <div className="row-actions">
                             <button
                               className="row-edit"
                               onClick={() =>
-                                startEditing(expense)
+                                startEditing(
+                                  expense,
+                                )
                               }
                               aria-label={`Edit ${expense.description}`}
                               data-testid={`button-edit-${expense.id}`}
                             >
-                              <Pencil size={15} />
+                              <Pencil
+                                size={15}
+                              />
                             </button>
 
                             <button
@@ -1252,7 +1776,9 @@ function App() {
                               aria-label={`Delete ${expense.description}`}
                               data-testid={`button-delete-${expense.id}`}
                             >
-                              <Trash2 size={15} />
+                              <Trash2
+                                size={15}
+                              />
                             </button>
                           </div>
                         </div>
@@ -1280,8 +1806,9 @@ function App() {
             </h1>
 
             <p className="page-subtitle">
-              A visual check-in built from your own notes.
-              Add or remove an expense and the picture
+              A visual check-in built from
+              your own notes. Add or remove
+              an expense and the picture
               changes with it.
             </p>
 
@@ -1297,16 +1824,20 @@ function App() {
                     </h2>
 
                     <p>
-                      Where your money is going
+                      Where your money
+                      is going
                     </p>
                   </div>
 
                   <span className="stat-icon">
-                    <ShoppingBag size={16} />
+                    <ShoppingBag
+                      size={16}
+                    />
                   </span>
                 </div>
 
-                {categoryData.length === 0 ? (
+                {categoryData.length ===
+                0 ? (
                   <div className="chart-empty">
                     Your category story
                     <br />
@@ -1321,18 +1852,30 @@ function App() {
                       >
                         <PieChart>
                           <Pie
-                            data={categoryData}
+                            data={
+                              categoryData
+                            }
                             dataKey="value"
                             nameKey="name"
-                            innerRadius={60}
-                            outerRadius={88}
-                            paddingAngle={3}
+                            innerRadius={
+                              60
+                            }
+                            outerRadius={
+                              88
+                            }
+                            paddingAngle={
+                              3
+                            }
                             stroke="none"
                           >
                             {categoryData.map(
-                              (item) => (
+                              (
+                                item,
+                              ) => (
                                 <Cell
-                                  key={item.name}
+                                  key={
+                                    item.name
+                                  }
                                   fill={
                                     categoryColors[
                                       item.name as Category
@@ -1346,33 +1889,45 @@ function App() {
                           <Tooltip
                             formatter={(
                               value: number,
-                            ) => formatMoney(value)}
+                            ) =>
+                              formatMoney(
+                                value,
+                              )
+                            }
                           />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
 
                     <div className="legend">
-                      {categoryData.map((item) => (
-                        <div
-                          className="legend-row"
-                          key={item.name}
-                        >
-                          <span
-                            className={`category-dot ${categoryClass(
-                              item.name as Category,
-                            )}`}
-                          />
+                      {categoryData.map(
+                        (item) => (
+                          <div
+                            className="legend-row"
+                            key={
+                              item.name
+                            }
+                          >
+                            <span
+                              className={`category-dot ${categoryClass(
+                                item.name as Category,
+                              )}`}
+                            />
 
-                          <span>
-                            {item.name}
-                          </span>
+                            <span>
+                              {
+                                item.name
+                              }
+                            </span>
 
-                          <span>
-                            {formatMoney(item.value)}
-                          </span>
-                        </div>
-                      ))}
+                            <span>
+                              {formatMoney(
+                                item.value,
+                              )}
+                            </span>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
                 )}
@@ -1389,18 +1944,23 @@ function App() {
                     </h2>
 
                     <p>
-                      Daily rhythm of your spending
+                      Daily rhythm of
+                      your spending
                     </p>
                   </div>
 
                   <span className="stat-icon">
-                    <TrendingUp size={16} />
+                    <TrendingUp
+                      size={16}
+                    />
                   </span>
                 </div>
 
-                {timeData.length === 0 ? (
+                {timeData.length ===
+                0 ? (
                   <div className="chart-empty">
-                    Log a few expenses to
+                    Log a few expenses
+                    to
                     <br />
                     see your rhythm.
                   </div>
@@ -1411,7 +1971,9 @@ function App() {
                       height="100%"
                     >
                       <BarChart
-                        data={timeData}
+                        data={
+                          timeData
+                        }
                         margin={{
                           top: 8,
                           right: 4,
@@ -1431,8 +1993,12 @@ function App() {
                             fontSize: 10,
                             fill: '#71807d',
                           }}
-                          tickLine={false}
-                          axisLine={false}
+                          tickLine={
+                            false
+                          }
+                          axisLine={
+                            false
+                          }
                         />
 
                         <YAxis
@@ -1440,9 +2006,15 @@ function App() {
                             fontSize: 10,
                             fill: '#71807d',
                           }}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(value) =>
+                          tickLine={
+                            false
+                          }
+                          axisLine={
+                            false
+                          }
+                          tickFormatter={(
+                            value,
+                          ) =>
                             `₹${value}`
                           }
                         />
@@ -1450,7 +2022,11 @@ function App() {
                         <Tooltip
                           formatter={(
                             value: number,
-                          ) => formatMoney(value)}
+                          ) =>
+                            formatMoney(
+                              value,
+                            )
+                          }
                           cursor={{
                             fill: 'rgba(28, 87, 81, .06)',
                           }}
@@ -1459,8 +2035,15 @@ function App() {
                         <Bar
                           dataKey="amount"
                           fill="#1c5751"
-                          radius={[6, 6, 2, 2]}
-                          maxBarSize={38}
+                          radius={[
+                            6,
+                            6,
+                            2,
+                            2,
+                          ]}
+                          maxBarSize={
+                            38
+                          }
                         />
                       </BarChart>
                     </ResponsiveContainer>
@@ -1477,71 +2060,148 @@ function App() {
             data-testid="view-about"
           >
             <p className="eyebrow">
-              A small tool with a clear purpose
+              A small tool with a clear
+              purpose
             </p>
 
             <div className="about-card">
               <h2>
                 Money is a tool for your{' '}
-                <em>next good day.</em>
+                <em>
+                  next good day.
+                </em>
               </h2>
 
               <div className="about-copy">
                 <p>
-                  SmartSpend is a simple personal finance
-                  tool designed to help students understand
-                  and manage their daily spending.
+                  SmartSpend is a simple
+                  personal finance tool
+                  designed to help students
+                  understand and manage their
+                  daily spending.
                 </p>
 
                 <ul className="about-points">
                   <li>
-                    <Check size={15} /> Private by default,
-                    stored only in this browser
+                    <Check size={15} />
+                    Private by default,
+                    stored only in this
+                    browser
                   </li>
 
                   <li>
-                    <Check size={15} /> Simple enough for a
+                    <Check size={15} />
+                    Simple enough for a
                     busy campus day
                   </li>
 
                   <li>
-                    <Check size={15} /> Visual enough to spot
-                    a useful pattern
+                    <Check size={15} />
+                    Visual enough to spot a
+                    useful pattern
                   </li>
                 </ul>
 
                 {/* Developer information */}
                 <div
                   style={{
-                    marginTop: '32px',
-                    paddingTop: '24px',
+                    marginTop: '40px',
+                    paddingTop: '30px',
                     borderTop:
-                      '1px solid rgba(0, 0, 0, 0.08)',
+                      '1px solid #dedbd0',
                   }}
                 >
                   <p className="eyebrow">
-                    About the Developer
+                    About the developer
                   </p>
 
-                  <h3
+                  <h2
                     style={{
-                      margin: '8px 0 6px',
-                      fontSize: '24px',
+                      fontFamily:
+                        'var(--app-font-sans)',
+                      fontSize: 28,
+                      marginBottom: 10,
                     }}
                   >
                     Vanka Siva Teja
-                  </h3>
+                  </h2>
 
                   <p>
-                    Creator &amp; Developer of
-                    SmartSpend — Student Budget Manager.
+                    Creator &amp;
+                    Developer of SmartSpend
+                    — Student Budget Manager.
                   </p>
 
-                  <p style={{ marginTop: '12px' }}>
-                    SmartSpend was created to help students
-                    track expenses, manage budgets, and
-                    develop better financial habits.
+                  <p>
+                    SmartSpend was created
+                    to help students track
+                    expenses, manage budgets,
+                    and develop better
+                    financial habits.
                   </p>
+
+                  <div
+                    style={{
+                      marginTop: '24px',
+                      display: 'flex',
+                      flexDirection:
+                        'column',
+                      gap: '12px',
+                    }}
+                  >
+                    {/* Email */}
+                    <a
+                      href={`mailto:${DEVELOPER_EMAIL}`}
+                      style={{
+                        color:
+                          'inherit',
+                        textDecoration:
+                          'none',
+                      }}
+                    >
+                      📧{' '}
+                      {
+                        DEVELOPER_EMAIL
+                      }
+                    </a>
+
+                    {/* LinkedIn */}
+                    {LINKEDIN_URL !==
+                      'YOUR_LINKEDIN_PROFILE_URL' && (
+                      <a
+                        href={
+                          LINKEDIN_URL
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color:
+                            'inherit',
+                          textDecoration:
+                            'none',
+                        }}
+                      >
+                        🔗 LinkedIn
+                      </a>
+                    )}
+
+                    {/* GitHub */}
+                    <a
+                      href={
+                        GITHUB_URL
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color:
+                          'inherit',
+                        textDecoration:
+                          'none',
+                      }}
+                    >
+                      💻 GitHub
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1550,9 +2210,11 @@ function App() {
       </main>
 
       <footer className="footer">
-        Built with HTML, CSS &amp; JavaScript | SmartSpend
-        Student Budget Manager | Developed by Vanka Siva
-        Teja
+        Built with HTML, CSS &amp; JavaScript
+        {' | '}
+        Student Expense Tracker
+        {' | '}
+        Created by Vanka Siva Teja
       </footer>
 
       <nav
@@ -1560,15 +2222,25 @@ function App() {
         aria-label="Mobile navigation"
       >
         {navItems.map(
-          ({ id, label, icon: Icon }) => (
+          ({
+            id,
+            label,
+            icon: Icon,
+          }) => (
             <button
               className={`mobile-nav-button ${
-                view === id ? 'active' : ''
+                view === id
+                  ? 'active'
+                  : ''
               }`}
               key={id}
-              onClick={() => goTo(id)}
+              onClick={() =>
+                goTo(id)
+              }
               aria-current={
-                view === id ? 'page' : undefined
+                view === id
+                  ? 'page'
+                  : undefined
               }
               data-testid={`mobile-nav-${id}`}
             >
@@ -1582,7 +2254,9 @@ function App() {
       {notice && (
         <div
           className={`toast ${
-            notice.type === 'error' ? 'error' : ''
+            notice.type === 'error'
+              ? 'error'
+              : ''
           }`}
           role="status"
           data-testid="status-notification"
@@ -1609,28 +2283,38 @@ function App() {
             </h2>
 
             <p>
-              “{expenseToDelete.description}” will be
-              permanently removed from your local tracker.
-              This cannot be undone.
+              “
+              {
+                expenseToDelete.description
+              }
+              ” will be permanently
+              removed from your local
+              tracker. This cannot be undone.
             </p>
 
             <div className="dialog-actions">
               <button
                 className="button ghost"
                 onClick={() =>
-                  setExpenseToDelete(null)
+                  setExpenseToDelete(
+                    null,
+                  )
                 }
                 data-testid="button-cancel-delete"
               >
-                <X size={15} /> Keep it
+                <X size={15} />
+                Keep it
               </button>
 
               <button
                 className="button danger"
-                onClick={confirmDelete}
+                onClick={
+                  confirmDelete
+                }
                 data-testid="button-confirm-delete"
               >
-                <Trash2 size={15} /> Remove
+                <Trash2 size={15} />
+                Remove
               </button>
             </div>
           </div>
