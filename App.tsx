@@ -88,7 +88,7 @@ const DEVELOPER_EMAIL = 'sivatejavanka118@gmail.com';
  * Example:
  * https://www.linkedin.com/in/vanka-siva-teja/
  */
-const LINKEDIN_URL = 'YOUR_LINKEDIN_PROFILE_URL';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/siva-teja-vanka-455bba33a?utm_source=share_via&utm_content=profile&utm_medium=member_android';
 
 const GITHUB_URL = 'https://github.com/vankasivateja';
 
